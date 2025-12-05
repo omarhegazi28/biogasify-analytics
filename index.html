@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biowaste Gasification: Strategic Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #fafaf9; color: #44403c; }
+        
+        /* Chart Container Styling - Critical for Responsiveness */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container { height: 350px; }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #d6d3d1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #a8a29e; }
+
+        /* Transitions */
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .nav-item.active {
+            background-color: #fff;
+            color: #d97706;
+            border-bottom: 2px solid #d97706;
+            font-weight: 600;
+        }
+        .nav-item {
+            color: #78716c;
+            transition: all 0.2s;
+        }
+        .nav-item:hover { color: #d97706; background-color: #fffbeb; }
+
+        .card-interaction:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+    </style>
+    <!-- Chosen Palette: Warm Neutrals (Stone/Warm Gray) with Amber (Egypt/Energy) and Emerald (Germany/Sustainability) Accents -->
+    <!-- Application Structure Plan: 
+         1. Dashboard View: High-level comparison (Radar Chart) + Key Metrics.
+         2. Case Studies View: Deep dive into Germany vs Egypt text/cards.
+         3. Tech Performance View: Visualization of the specific Energy Balance data (IISc vs Fayoum).
+         4. Simulator View: The functional calculator embedded as a tool.
+    -->
+    <!-- Visualization & Content Choices:
+         - Radar Chart: Ideal for comparing multi-faceted market attributes (Policy, Tech, Risk).
+         - Bar Charts: For comparing quantitative efficiency data from the reports.
+         - Doughnut Chart: For the simulator energy breakdown.
+         - Interactive Cards: To chunk text content about policies and challenges.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Navigation -->
+    <nav class="bg-white border-b border-stone-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center gap-3">
+                    <div class="h-8 w-8 bg-amber-500 rounded-full flex items-center justify-center text-white font-bold">⚡</div>
+                    <span class="font-bold text-xl tracking-tight text-stone-800">BioGasify<span class="text-amber-600">Analytics</span></span>
+                </div>
+                <div class="hidden md:flex space-x-1 h-full items-end">
+                    <button onclick="navigate('dashboard')" id="nav-dashboard" class="nav-item active px-4 py-3 text-sm h-full border-b-2 border-transparent">Strategic Overview</button>
+                    <button onclick="navigate('markets')" id="nav-markets" class="nav-item px-4 py-3 text-sm h-full border-b-2 border-transparent">Market Analysis</button>
+                    <button onclick="navigate('performance')" id="nav-performance" class="nav-item px-4 py-3 text-sm h-full border-b-2 border-transparent">Tech Performance</button>
+                    <button onclick="navigate('simulator')" id="nav-simulator" class="nav-item px-4 py-3 text-sm h-full border-b-2 border-transparent">Simulator Tool</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+
+        <!-- VIEW 1: STRATEGIC DASHBOARD -->
+        <section id="view-dashboard" class="fade-in block">
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-stone-900">Executive Summary</h1>
+                <p class="mt-2 text-stone-600 max-w-3xl">A comparative analysis of the mature, policy-driven German market versus the high-potential, necessity-driven Egyptian market for biowaste gasification.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Radar Chart Card -->
+                <div class="lg:col-span-5 bg-white p-6 rounded-xl shadow-sm border border-stone-100">
+                    <h2 class="text-lg font-bold text-stone-800 mb-2">Market Maturity Profile</h2>
+                    <p class="text-xs text-stone-500 mb-4">Germany (The Model) vs. Egypt (The Opportunity)</p>
+                    <div class="chart-container">
+                        <canvas id="radarChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Key Insights Grid -->
+                <div class="lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Germany Card -->
+                    <div class="bg-emerald-50 p-6 rounded-xl border border-emerald-100 card-interaction cursor-pointer" onclick="navigate('markets')">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="font-bold text-emerald-900">Germany 🇩🇪</h3>
+                            <span class="bg-emerald-200 text-emerald-800 text-xs px-2 py-1 rounded-full font-bold">Established</span>
+                        </div>
+                        <ul class="space-y-2 text-sm text-emerald-800">
+                            <li class="flex gap-2"><span>🎯</span> <strong>Driver:</strong> Climate Policy (Energiewende)</li>
+                            <li class="flex gap-2"><span>💰</span> <strong>Finance:</strong> Guaranteed Feed-in Tariffs</li>
+                            <li class="flex gap-2"><span>⚙️</span> <strong>Tech:</strong> High-Efficiency CHP (~85%)</li>
+                        </ul>
+                    </div>
+
+                    <!-- Egypt Card -->
+                    <div class="bg-amber-50 p-6 rounded-xl border border-amber-100 card-interaction cursor-pointer" onclick="navigate('markets')">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="font-bold text-amber-900">Egypt 🇪🇬</h3>
+                            <span class="bg-amber-200 text-amber-800 text-xs px-2 py-1 rounded-full font-bold">Emerging</span>
+                        </div>
+                        <ul class="space-y-2 text-sm text-amber-800">
+                            <li class="flex gap-2"><span>🔥</span> <strong>Driver:</strong> Waste Crisis (Black Cloud)</li>
+                            <li class="flex gap-2"><span>🌾</span> <strong>Potential:</strong> ~15M Tons Ag-Waste/Year</li>
+                            <li class="flex gap-2"><span>🚧</span> <strong>Challenge:</strong> Logistics & Sorting</li>
+                        </ul>
+                    </div>
+
+                    <!-- Synthesis Card -->
+                    <div class="md:col-span-2 bg-white p-6 rounded-xl border border-stone-200 shadow-sm">
+                        <h3 class="font-bold text-stone-800 mb-2">Strategic Synthesis</h3>
+                        <p class="text-sm text-stone-600 leading-relaxed">
+                            While Germany provides the <strong>technological blueprint</strong> and policy framework (EEG), Egypt offers a <strong>massive proving ground</strong>. The path forward requires adapting German high-efficiency designs to handle Egyptian feedstock challenges (sorting/ash) and establishing secure financing models similar to the German FiT.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 2: MARKETS DEEP DIVE -->
+        <section id="view-markets" class="fade-in hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Germany Column -->
+                <div class="space-y-6">
+                    <div class="border-l-4 border-emerald-500 pl-4">
+                        <h2 class="text-2xl font-bold text-stone-900">The German Blueprint</h2>
+                        <p class="text-stone-500">Decarbonization through Efficiency</p>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-stone-100">
+                        <h3 class="font-bold text-emerald-700 mb-3">Policy Engine: The EEG</h3>
+                        <p class="text-sm text-stone-600 mb-4">
+                            The <strong>Renewable Energy Sources Act (EEG)</strong> is the cornerstone. By guaranteeing prices for 20 years, it removed risk for investors, allowing expensive but efficient technologies to flourish.
+                        </p>
+                        <div class="bg-stone-50 p-3 rounded text-xs text-stone-500 font-mono">
+                            Result: Market Stability + Tech Innovation
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-stone-100">
+                        <h3 class="font-bold text-emerald-700 mb-3">Tech Focus: CHP</h3>
+                        <p class="text-sm text-stone-600">
+                            Germany mandates <strong>Combined Heat and Power (CHP)</strong>. Standard plants waste 60% of energy as heat. German plants capture this for district heating.
+                        </p>
+                        <div class="mt-4 h-4 w-full bg-stone-200 rounded-full overflow-hidden flex">
+                            <div class="bg-emerald-500 w-[40%]" title="Electricity"></div>
+                            <div class="bg-emerald-300 w-[45%]" title="Heat Utilized"></div>
+                        </div>
+                        <div class="flex justify-between text-xs text-stone-500 mt-1">
+                            <span>40% Elec</span>
+                            <span>45% Heat (Utilized)</span>
+                            <span>15% Loss</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Egypt Column -->
+                <div class="space-y-6">
+                    <div class="border-l-4 border-amber-500 pl-4">
+                        <h2 class="text-2xl font-bold text-stone-900">The Egyptian Context</h2>
+                        <p class="text-stone-500">Solving the "Black Cloud"</p>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-stone-100">
+                        <h3 class="font-bold text-amber-700 mb-3">The Untapped Goldmine</h3>
+                        <p class="text-sm text-stone-600 mb-4">
+                            Egypt produces massive amounts of biomass that is currently burned or dumped.
+                        </p>
+                        <div class="chart-container" style="height: 200px;">
+                            <canvas id="egyptWasteChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-stone-100">
+                        <h3 class="font-bold text-amber-700 mb-3">Critical Barriers</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-start gap-3">
+                                <div class="w-6 h-6 rounded bg-red-100 text-red-600 flex items-center justify-center text-xs font-bold shrink-0">1</div>
+                                <p class="text-sm text-stone-600"><strong>Feedstock Quality:</strong> Municipal waste is unsorted. Plastics and metals damage gasifiers.</p>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <div class="w-6 h-6 rounded bg-red-100 text-red-600 flex items-center justify-center text-xs font-bold shrink-0">2</div>
+                                <p class="text-sm text-stone-600"><strong>Rice Straw Ash:</strong> High silica content causes slagging (glass) in standard reactors.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 3: TECH PERFORMANCE -->
+        <section id="view-performance" class="fade-in hidden">
+            <div class="mb-8 flex justify-between items-end">
+                <div>
+                    <h2 class="text-2xl font-bold text-stone-900">Energy Balance Analysis</h2>
+                    <p class="text-stone-500">Comparing real-world data from the studied case studies.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Main Comparison Chart -->
+                <div class="lg:col-span-8 bg-white p-6 rounded-xl shadow-sm border border-stone-100">
+                    <h3 class="font-bold text-stone-800 mb-6">Efficiency Comparison: Basic vs. Advanced vs. Agricultural</h3>
+                    <div class="chart-container">
+                        <canvas id="efficiencyChart"></canvas>
+                    </div>
+                    <div class="mt-4 grid grid-cols-3 text-center text-xs text-stone-500">
+                        <div>
+                            <strong>Zainal (Basic Wood)</strong><br>Standard Reference
+                        </div>
+                        <div>
+                            <strong>IISc (Advanced)</strong><br>German-Level Tech
+                        </div>
+                        <div>
+                            <strong>Fayoum (Cotton)</strong><br>Egyptian Ag-Waste
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KPI Cards -->
+                <div class="lg:col-span-4 space-y-4">
+                    <div class="bg-white p-5 rounded-xl border-l-4 border-blue-500 shadow-sm">
+                        <p class="text-xs font-bold text-stone-400 uppercase">Best Gas Quality</p>
+                        <h3 class="text-2xl font-bold text-stone-800">5.47 <span class="text-sm font-normal">MJ/Nm³</span></h3>
+                        <p class="text-sm text-stone-500 mt-1">IISc Advanced Unit</p>
+                        <p class="text-xs text-emerald-600 mt-2">Excellent for Engines</p>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-xl border-l-4 border-amber-500 shadow-sm">
+                        <p class="text-xs font-bold text-stone-400 uppercase">Fayoum Cotton Stalks</p>
+                        <h3 class="text-2xl font-bold text-stone-800">4.70 <span class="text-sm font-normal">MJ/Nm³</span></h3>
+                        <p class="text-sm text-stone-500 mt-1">Egyptian Pilot Study</p>
+                        <p class="text-xs text-blue-600 mt-2">Sufficient for Irrigation Pumps</p>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-xl border-l-4 border-red-500 shadow-sm">
+                        <p class="text-xs font-bold text-stone-400 uppercase">Rice Straw Efficiency</p>
+                        <h3 class="text-2xl font-bold text-stone-800">64.8%</h3>
+                        <p class="text-sm text-stone-500 mt-1">Due to High Ash/Silica</p>
+                        <p class="text-xs text-red-500 mt-2">Requires Thermal Application</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 4: SIMULATOR -->
+        <section id="view-simulator" class="fade-in hidden">
+            <div class="bg-white rounded-xl shadow-lg border border-stone-200 overflow-hidden">
+                <div class="bg-stone-900 px-6 py-4 flex justify-between items-center">
+                    <div>
+                        <h2 class="text-xl font-bold text-white">Gasification Simulator</h2>
+                        <p class="text-stone-400 text-sm">Run your own energy balance calculations</p>
+                    </div>
+                    <button onclick="runSimulation()" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-6 rounded-lg transition">Run Simulation</button>
+                </div>
+
+                <div class="p-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Inputs -->
+                    <div class="space-y-4 bg-stone-50 p-4 rounded-lg">
+                        <h3 class="font-bold text-stone-700 border-b border-stone-200 pb-2">Input Parameters</h3>
+                        
+                        <div>
+                            <label class="block text-xs font-bold text-stone-500 mb-1">Fuel Mass Flow (kg/h)</label>
+                            <input type="number" id="sim-mass" value="6.4" class="w-full p-2 border rounded border-stone-300">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-stone-500 mb-1">Fuel LHV (MJ/kg)</label>
+                            <input type="number" id="sim-lhv-fuel" value="15.8" class="w-full p-2 border rounded border-stone-300">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-stone-500 mb-1">Syngas Output (Nm³/h)</label>
+                            <input type="number" id="sim-vol" value="15.3" class="w-full p-2 border rounded border-stone-300">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-stone-500 mb-1">Outlet Temp (°C)</label>
+                            <input type="number" id="sim-temp" value="320" class="w-full p-2 border rounded border-stone-300">
+                        </div>
+
+                        <div class="pt-2 border-t border-stone-200">
+                            <label class="block text-xs font-bold text-stone-500 mb-2">Gas Composition (%)</label>
+                            <div class="grid grid-cols-3 gap-2">
+                                <div><span class="text-xs">CO</span><input type="number" id="sim-co" value="19.2" class="w-full p-1 text-sm border rounded"></div>
+                                <div><span class="text-xs">H2</span><input type="number" id="sim-h2" value="14.1" class="w-full p-1 text-sm border rounded"></div>
+                                <div><span class="text-xs">CH4</span><input type="number" id="sim-ch4" value="2.1" class="w-full p-1 text-sm border rounded"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Outputs -->
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-blue-50 p-4 rounded border border-blue-100">
+                                <p class="text-xs text-blue-600 font-bold uppercase">Syngas LHV</p>
+                                <p class="text-2xl font-bold text-blue-900" id="res-lhv">0.00</p>
+                                <p class="text-xs text-blue-400">MJ/Nm³</p>
+                            </div>
+                            <div class="bg-emerald-50 p-4 rounded border border-emerald-100">
+                                <p class="text-xs text-emerald-600 font-bold uppercase">Efficiency (CGE)</p>
+                                <p class="text-2xl font-bold text-emerald-900" id="res-eff">0.0%</p>
+                                <p class="text-xs text-emerald-400">Conversion Rate</p>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white p-4 rounded border border-stone-200">
+                            <h4 class="font-bold text-sm text-stone-700 mb-3">Energy Breakdown (MJ/h)</h4>
+                            <div class="flex justify-between text-sm py-1 border-b border-stone-100">
+                                <span>Input Energy:</span>
+                                <span class="font-mono" id="res-in">0.00</span>
+                            </div>
+                            <div class="flex justify-between text-sm py-1 border-b border-stone-100 text-emerald-600">
+                                <span>Chemical Energy:</span>
+                                <span class="font-mono" id="res-chem">0.00</span>
+                            </div>
+                            <div class="flex justify-between text-sm py-1 border-b border-stone-100 text-amber-600">
+                                <span>Sensible Heat:</span>
+                                <span class="font-mono" id="res-sens">0.00</span>
+                            </div>
+                            <div class="flex justify-between text-sm py-1 text-red-600 font-bold">
+                                <span>Losses:</span>
+                                <span class="font-mono" id="res-loss">0.00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chart -->
+                    <div class="flex flex-col justify-center items-center">
+                        <h4 class="text-sm font-bold text-stone-500 mb-2">Energy Distribution</h4>
+                        <div class="chart-container" style="height: 200px; width: 200px;">
+                            <canvas id="simChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-white border-t border-stone-200 mt-auto py-8">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-sm text-stone-500">Gasification Analysis Report & Simulator</p>
+            <p class="text-xs text-stone-400 mt-1">Data sources: Zainal et al., Dasappa et al. (IISc), El-Sawy et al. (Menoufia Univ)</p>
+        </div>
+    </footer>
+
+    <!-- LOGIC -->
+    <script>
+        // --- Navigation ---
+        function navigate(viewId) {
+            // Hide all views
+            ['dashboard', 'markets', 'performance', 'simulator'].forEach(id => {
+                document.getElementById(`view-${id}`).classList.add('hidden');
+                document.getElementById(`view-${id}`).classList.remove('block');
+                document.getElementById(`nav-${id}`).classList.remove('active');
+            });
+            
+            // Show selected view
+            document.getElementById(`view-${viewId}`).classList.remove('hidden');
+            document.getElementById(`view-${viewId}`).classList.add('block');
+            document.getElementById(`nav-${viewId}`).classList.add('active');
+
+            // Resize charts if necessary
+            if (viewId === 'dashboard') radarChart.resize();
+            if (viewId === 'markets') wasteChart.resize();
+            if (viewId === 'performance') effChart.resize();
+        }
+
+        // --- Charts Initialization ---
+        let radarChart, wasteChart, effChart, simChart;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initRadarChart();
+            initWasteChart();
+            initEffChart();
+            runSimulation(); // Init simulator
+        });
+
+        function initRadarChart() {
+            const ctx = document.getElementById('radarChart').getContext('2d');
+            radarChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Policy Support', 'Tech Maturity', 'Economic Stability', 'Feedstock Quality', 'Infrastructure'],
+                    datasets: [{
+                        label: 'Germany',
+                        data: [9, 9, 9, 8, 9],
+                        backgroundColor: 'rgba(16, 185, 129, 0.2)', // Emerald
+                        borderColor: '#10b981',
+                        pointBackgroundColor: '#10b981'
+                    }, {
+                        label: 'Egypt',
+                        data: [4, 3, 5, 3, 4],
+                        backgroundColor: 'rgba(245, 158, 11, 0.2)', // Amber
+                        borderColor: '#f59e0b',
+                        pointBackgroundColor: '#f59e0b'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { r: { suggestMin: 0, suggestMax: 10, grid: { color: '#e7e5e4' } } },
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+        }
+
+        function initWasteChart() {
+            const ctx = document.getElementById('egyptWasteChart').getContext('2d');
+            wasteChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Ag Waste (Annual)', 'MSW (Annual)'],
+                    datasets: [{
+                        label: 'Million Tons',
+                        data: [15, 22],
+                        backgroundColor: ['#f59e0b', '#78716c'],
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        function initEffChart() {
+            const ctx = document.getElementById('efficiencyChart').getContext('2d');
+            effChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Zainal (Basic)', 'IISc (Advanced)', 'Fayoum (Cotton)', 'Rice Straw'],
+                    datasets: [
+                        {
+                            label: 'Cold Gas Efficiency (%)',
+                            data: [72.8, 86.1, 71.1, 64.8],
+                            backgroundColor: '#10b981',
+                            order: 1
+                        },
+                        {
+                            label: 'Energy Losses (%)',
+                            data: [20.8, 4.7, 22.8, 29.9],
+                            backgroundColor: '#ef4444',
+                            order: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true, max: 100 } },
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+        }
+
+        // --- Simulator Logic ---
+        function runSimulation() {
+            // Inputs
+            const m = parseFloat(document.getElementById('sim-mass').value);
+            const lhv = parseFloat(document.getElementById('sim-lhv-fuel').value);
+            const v = parseFloat(document.getElementById('sim-vol').value);
+            const t = parseFloat(document.getElementById('sim-temp').value);
+            
+            const co = parseFloat(document.getElementById('sim-co').value) / 100;
+            const h2 = parseFloat(document.getElementById('sim-h2').value) / 100;
+            const ch4 = parseFloat(document.getElementById('sim-ch4').value) / 100;
+
+            // Constants
+            const LHV_CO = 12.63, LHV_H2 = 10.78, LHV_CH4 = 35.88, CP = 1.35;
+            const T_REF = 25;
+
+            // Calc
+            const E_in = m * lhv;
+            const LHV_gas = (co * LHV_CO) + (h2 * LHV_H2) + (ch4 * LHV_CH4);
+            const E_chem = v * LHV_gas;
+            const E_sens = (v * CP * (t - T_REF)) / 1000; // MJ
+            const E_loss = E_in - (E_chem + E_sens);
+            const eff = (E_chem / E_in) * 100;
+
+            // Update DOM
+            document.getElementById('res-lhv').innerText = LHV_gas.toFixed(2);
+            document.getElementById('res-eff').innerText = eff.toFixed(1) + '%';
+            document.getElementById('res-in').innerText = E_in.toFixed(1);
+            document.getElementById('res-chem').innerText = E_chem.toFixed(1);
+            document.getElementById('res-sens').innerText = E_sens.toFixed(1);
+            document.getElementById('res-loss').innerText = E_loss.toFixed(1);
+
+            // Update Chart
+            updateSimChart(E_chem, E_sens, E_loss);
+        }
+
+        function updateSimChart(chem, sens, loss) {
+            const ctx = document.getElementById('simChart').getContext('2d');
+            
+            // Ensure values are non-negative for chart
+            const chartData = [Math.max(0, chem), Math.max(0, sens), Math.max(0, loss)];
+
+            if (simChart) {
+                simChart.data.datasets[0].data = chartData;
+                simChart.update();
+            } else {
+                simChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Chemical', 'Sensible', 'Losses'],
+                        datasets: [{
+                            data: chartData,
+                            backgroundColor: ['#10b981', '#f59e0b', '#ef4444'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '70%',
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>
